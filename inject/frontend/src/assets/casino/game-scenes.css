@@ -1,0 +1,87 @@
+/*
+ * Casino scene visuals (ported from the legacy plugin game-scenes.css).
+ * Reference JPEGs are used as illustration sprites / canvas scenes only —
+ * never as full-page backgrounds — so they do not clash with main-site tokens.
+ * Sprite URLs are injected at runtime through the --casino-slots-sprite /
+ * --casino-* custom properties (see components/casino/renderers.ts).
+ */
+
+.casino-scene-vars {
+  --scene-purple: #7045f8;
+  --scene-blue: #5088f8;
+  --scene-gold: #f2b632;
+  --scene-ink: #2d2350;
+}
+
+/* ==================== Lucky Wheel ==================== */
+
+.casino-wheel-stage { width: 100%; min-height: 565px; position: relative; overflow: hidden; border-radius: 20px; background: radial-gradient(circle at 50% 46%, #e4d9fc 0%, #f1ecfe 40%, #ffffff 72%); }
+.wheel-scene { width: min(88vw, 910px); height: 565px; margin: 0 auto; position: relative; display: grid; place-items: center; }
+.wheel-canvas { width: min(69vw, 690px); height: min(69vw, 580px); max-height: 580px; object-fit: contain; filter: drop-shadow(0 18px 22px rgba(34, 12, 78, .35)); }
+.wheel-pointer { position: absolute; top: calc(50% - min(34vw, 285px)); left: 50%; z-index: 3; width: 0; height: 0; transform: translateX(-50%); border-left: 19px solid transparent; border-right: 19px solid transparent; border-top: 46px solid #ffe8a4; filter: drop-shadow(0 2px 2px #8c5216); }
+.wheel-pointer::after { content: ''; position: absolute; left: -8px; top: -44px; width: 16px; height: 16px; border-radius: 50%; background: #fff5c4; box-shadow: 0 0 13px #fff2a2; }
+.wheel-hub { position: absolute; top: 50%; left: 50%; z-index: 4; width: clamp(118px, 17vw, 174px); aspect-ratio: 1; transform: translate(-50%, -50%); border: 11px solid #efb632; border-radius: 50%; color: #fff7cf; background: radial-gradient(circle at 34% 25%, #aa8cff, #7045f8 48%, #4222a4 100%); box-shadow: inset 0 0 0 3px #ffe29a, 0 6px 14px rgba(37, 14, 90, .45); font: 800 clamp(23px, 3.2vw, 35px) 'Microsoft YaHei', sans-serif; cursor: pointer; transition: filter .15s ease; }
+.wheel-hub:hover:not(:disabled) { filter: brightness(1.08); }
+.wheel-hub:disabled { cursor: not-allowed; filter: saturate(.6) brightness(.92); }
+.wheel-hub span, .wheel-hub small { display: block; line-height: 1.15; }
+.wheel-hub small { margin-top: 5px; font-size: clamp(10px, 1.15vw, 13px); font-weight: 600; }
+.wheel-hub:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+
+/* ==================== Slot Machine reels ==================== */
+
+.slot-grid5 { width: 100%; height: 100%; position: relative; overflow: hidden; }
+.slot-frame { position: absolute; inset: 0; display: flex; overflow: hidden; border: 3px solid #ad7642; border-radius: 12px;
+  background: linear-gradient(180deg, #fdf8ee 0%, #f6ebd6 55%, #efdfc6 100%);
+  box-shadow: inset 0 0 26px rgba(80, 34, 18, .16); }
+.slot-col { position: relative; flex: 1 1 0; min-width: 0; overflow: hidden; }
+.slot-col + .slot-col { border-left: 1px solid rgba(122, 74, 32, .14); }
+.slot-strip { position: absolute; left: 0; right: 0; top: 0; height: 100%; display: flex; flex-direction: column; will-change: transform; }
+/* 透明底符号图标：居中浮动，不再带格子底色 */
+.slot-cell { flex: 0 0 calc(100% / 3); min-height: 0;
+  background-image: var(--sym, none);
+  background-size: 74% 78%; background-position: center center; background-repeat: no-repeat; }
+/* 滚动：模糊 + 微纵向拉伸制造速度感 */
+.slot-grid5.is-spinning .slot-cell { filter: blur(2px) saturate(1.12) brightness(1.05); transform: scaleY(1.14); }
+@keyframes slot-roll { from { transform: translateY(0); } to { transform: translateY(calc(-100% / 3 * 5)); } }
+@media (prefers-reduced-motion: reduce) {
+  .slot-grid5.is-spinning .slot-cell { filter: none; transform: none; }
+  .slot-strip { animation-duration: 0s !important; }
+}
+.slot-payline { position: absolute; pointer-events: none; left: 0; right: 0; top: 33.333%; height: 33.333%; border-top: 2px solid rgba(255, 205, 67, .72); border-bottom: 2px solid rgba(255, 205, 67, .72); box-shadow: 0 0 11px rgba(255, 190, 45, .45); opacity: 0; }
+.slot-grid5.has-win .slot-payline { opacity: 1; }
+/* 中奖符号：金色光晕脉冲 */
+.slot-cell[data-win='1'] { animation: cell-win .85s ease 2; }
+@keyframes cell-win {
+  0%, 100% { filter: none; transform: none; }
+  50% { filter: drop-shadow(0 0 9px rgba(242, 182, 50, .95)) brightness(1.15); transform: scale(1.12); }
+}
+
+/* ==================== Blackjack table ==================== */
+
+.bj-hands { position: absolute; inset: 0; pointer-events: none; font-family: 'Microsoft YaHei', system-ui, sans-serif; }
+.bj-dealer, .bj-player { position: absolute; left: 50%; width: min(52%, 420px); transform: translateX(-50%); text-align: center; }
+.bj-dealer { top: 14%; }
+.bj-player { top: 46%; }
+.bj-cards { display: flex; justify-content: center; align-items: center; gap: 9px; min-height: 112px; }
+.bj-hand-label { margin: 8px 0; color: #5b70a9; font-size: 15px; font-weight: 800; }
+.bj-points { display: inline-grid; min-width: 31px; height: 31px; margin-left: 8px; padding: 0 7px; place-items: center; border-radius: 9px; color: #fff; background: linear-gradient(135deg, #679aff, #3d6ee8); box-shadow: 0 4px 9px rgba(61, 110, 232, .25); font-size: 14px; }
+.bj-card { position: relative; width: clamp(54px, 5.1vw, 78px); height: clamp(78px, 7.3vw, 112px); flex: 0 0 auto; overflow: hidden; border-radius: 7px; background: linear-gradient(145deg, #fff, #f5f1eb); color: #182033; box-shadow: 0 4px 9px rgba(31, 48, 92, .25), inset 0 0 0 1px rgba(117, 111, 101, .35); animation: bj-deal-in .3s ease-out; font-family: Georgia, 'Times New Roman', serif; }
+.bj-card::after { content: ''; position: absolute; inset: 5px; border: 1px solid rgba(67, 83, 128, .15); border-radius: 4px; pointer-events: none; }
+.bj-card.is-red { color: #d63742; }
+.bj-rank { position: absolute; top: 7px; left: 9px; z-index: 1; font-size: clamp(18px, 1.7vw, 25px); font-weight: 700; }
+.bj-suit-small { position: absolute; top: 31px; left: 10px; z-index: 1; font-size: clamp(15px, 1.45vw, 21px); }
+.bj-suit-large { position: absolute; right: 8px; bottom: 2px; font-size: clamp(31px, 3vw, 44px); }
+.bj-card-back { border: 4px solid #fff; background-color: #5088f8; background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, .35) 0 1px, transparent 1px 5px), repeating-linear-gradient(-45deg, rgba(255, 255, 255, .24) 0 1px, transparent 1px 6px), radial-gradient(circle, transparent 34%, rgba(255, 255, 255, .38) 35% 38%, transparent 39%); background-size: auto, auto, 18px 18px; box-shadow: 0 4px 10px rgba(44, 71, 148, .32), inset 0 0 0 2px #315ab8; }
+@keyframes bj-deal-in { from { opacity: 0; transform: translateY(-13px) rotate(4deg); } }
+
+@media (max-width: 760px) {
+  .casino-wheel-stage { min-height: 420px; }
+  .wheel-scene { height: 420px; }
+  .wheel-canvas { width: min(94vw, 470px); height: min(94vw, 420px); }
+  .wheel-pointer { top: calc(50% - min(46vw, 205px)); }
+  .bj-dealer, .bj-player { width: 78%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bj-card { animation: none; }
+  .wheel-hub { transition: none; }
+}

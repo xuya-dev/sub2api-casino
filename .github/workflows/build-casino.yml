@@ -1,0 +1,67 @@
+name: Build Casino Injector
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - os: windows-latest
+            artifact_name: inject-casino.exe
+            asset_name: inject-casino-windows-amd64.exe
+          - os: ubuntu-latest
+            artifact_name: inject-casino
+            asset_name: inject-casino-linux-amd64
+          - os: macos-latest
+            artifact_name: inject-casino
+            asset_name: inject-casino-darwin-amd64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Build injector
+        working-directory: plugin/casino/inject
+        run: |
+          python -m PyInstaller --onefile --name inject-casino --clean inject.py
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: plugin/casino/inject/dist/${{ matrix.artifact_name }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/inject-casino.exe/inject-casino.exe
+            artifacts/inject-casino/inject-casino
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
