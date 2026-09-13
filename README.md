@@ -48,7 +48,7 @@ Sub2API 的源码注入式娱乐玩法插件：**大转盘 · 老虎机 · 21 �
 
 ### 方式一：预编译可执行文件（推荐，零依赖）
 
-从 [Releases](https://github.com/your-org/sub2api-casino/releases) 下载对应平台的单文件：
+从 [Releases](https://github.com/xuya-dev/sub2api-casino/releases) 下载对应平台的单文件：
 
 | 平台 | 文件 | 用法 |
 |------|------|------|
@@ -80,7 +80,7 @@ install.bat C:\path\to\sub2api
 
 ```bash
 # 把仓库地址换成你实际存放本插件的地址
-curl -fsSL https://raw.githubusercontent.com/your-org/sub2api-casino/main/install.sh | bash -s -- /path/to/sub2api
+curl -fsSL https://raw.githubusercontent.com/xuya-dev/sub2api-casino/main/install.sh | bash -s -- /path/to/sub2api
 ```
 
 所有方式都会自动：拷贝源码 → 打幂等标记补丁 → `pnpm build` → `go build -tags embed` → 启动后端（:8080）。
