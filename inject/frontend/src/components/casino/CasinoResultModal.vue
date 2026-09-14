@@ -7,84 +7,72 @@
       aria-modal="true"
       :aria-label="game"
     >
-      <div class="absolute inset-0 bg-gray-900/55 backdrop-blur-[2px]" @click="close" />
-      <div class="relative w-full max-w-sm overflow-hidden rounded-3xl bg-white shadow-[0_24px_70px_rgba(15,23,42,0.35)] dark:bg-dark-900">
-        <!-- 结果横幅：渐变底 + 光斑 + 大金额，底部预留徽章嵌入空间 -->
-        <div class="relative overflow-hidden px-6 pb-12 pt-8 text-center" :class="bannerClass">
-          <div class="crm-glow crm-glow-a" aria-hidden="true" />
-          <div class="crm-glow crm-glow-b" aria-hidden="true" />
-          <div class="crm-sparkle absolute inset-0" aria-hidden="true" />
-          <p class="relative text-xs font-semibold uppercase tracking-[0.3em] text-white/75">{{ game }}</p>
-          <p class="relative mt-2 text-2xl font-black text-white drop-shadow-sm">{{ title }}</p>
-          <p
-            class="relative mt-1 text-[2.6rem] font-black leading-none tabular-nums tracking-tight text-white drop-shadow-md"
-          >
-            {{ delta >= 0 ? '+' : '−' }}{{ money(Math.abs(delta)) }}
-          </p>
-        </div>
+      <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-[3px]" @click="close" />
 
-        <div class="px-6 pb-6">
-          <!-- 结果徽章：负边距压入横幅下缘 -->
-          <div class="-mt-9 mb-4 flex justify-center">
-            <div
-              class="flex h-16 w-16 items-center justify-center rounded-full bg-white text-3xl shadow-lg ring-4 ring-white dark:bg-dark-800 dark:ring-dark-900"
-              aria-hidden="true"
-            >
-              {{ emoji }}
-            </div>
-          </div>
+      <div class="crm-card relative w-full max-w-sm" :style="themeVars">
+        <button type="button" class="crm-close" aria-label="close" @click="close">✕</button>
 
-          <!-- 明细：投注/派奖 双列 + 余额 -->
-          <div class="rounded-2xl bg-gray-50 p-4 dark:bg-dark-800/60">
-            <div class="grid grid-cols-2 gap-3">
-              <div class="rounded-xl bg-white px-3 py-2.5 text-center shadow-sm dark:bg-dark-900">
-                <p class="text-xs text-gray-400 dark:text-dark-500">{{ t('casino.modal.bet') }}</p>
-                <p class="mt-0.5 text-base font-bold tabular-nums text-gray-900 dark:text-white">{{ money(bet) }}</p>
+        <div class="crm-inner">
+          <!-- 顶部金线 + 结果区 -->
+          <div class="crm-topline" aria-hidden="true" />
+          <p class="crm-game">{{ game }}</p>
+          <h3 class="crm-title">{{ title }}</h3>
+          <p class="crm-amount">{{ delta >= 0 ? '+' : '−' }}{{ money(Math.abs(delta)) }}</p>
+          <p class="crm-msg">{{ message }}</p>
+
+          <!-- 明细 -->
+          <div class="crm-detail">
+            <div class="crm-grid">
+              <div class="crm-cell">
+                <span class="crm-k">{{ t('casino.modal.bet') }}</span>
+                <span class="crm-v">{{ money(bet) }}</span>
               </div>
-              <div class="rounded-xl bg-white px-3 py-2.5 text-center shadow-sm dark:bg-dark-900">
-                <p class="text-xs text-gray-400 dark:text-dark-500">{{ t('casino.modal.payout') }}</p>
-                <p class="mt-0.5 text-base font-bold tabular-nums text-gray-900 dark:text-white">{{ money(payout) }}</p>
+              <div class="crm-cell">
+                <span class="crm-k">{{ t('casino.modal.payout') }}</span>
+                <span class="crm-v">{{ money(payout) }}</span>
               </div>
             </div>
-            <div v-if="balance !== null" class="mt-2 flex items-center justify-between rounded-xl bg-white px-3 py-2 shadow-sm dark:bg-dark-900">
-              <span class="text-xs text-gray-400 dark:text-dark-500">{{ t('casino.modal.balanceAfter') }}</span>
-              <span class="text-sm font-bold tabular-nums text-gray-900 dark:text-white">{{ money(balance) }}</span>
+            <div v-if="balance !== null" class="crm-cell crm-balance">
+              <span class="crm-k">{{ t('casino.modal.balanceAfter') }}</span>
+              <span class="crm-v">{{ money(balance) }}</span>
             </div>
           </div>
 
           <!-- 弹窗内直接改下注（可选） -->
-          <div v-if="betOptions && betOptions.length" class="mt-4">
-            <p class="mb-1.5 text-xs font-medium text-gray-400 dark:text-dark-500">{{ t('casino.modal.betLabel') }}</p>
-            <div class="flex flex-wrap gap-2">
+          <div v-if="betOptions && betOptions.length" class="crm-chips-wrap">
+            <p class="crm-k crm-chips-lab">{{ t('casino.modal.betLabel') }}</p>
+            <div class="crm-chips">
               <button
                 v-for="v in betOptions"
                 :key="v"
                 type="button"
-                class="min-w-[3.25rem] rounded-full border px-3 py-1.5 text-sm font-semibold tabular-nums transition"
-                :class="Number(betValue) === v
-                  ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-500/10'
-                  : 'border-gray-200 text-gray-500 hover:border-primary-300 dark:border-dark-700 dark:text-dark-300'"
+                class="crm-chip"
+                :class="{ 'crm-chip-on': Number(betValue) === v }"
                 @click="$emit('update:betValue', v)"
               >
                 {{ money(v) }}
+                <span v-if="Number(betValue) === v" class="crm-chip-check" aria-hidden="true">✓</span>
               </button>
             </div>
           </div>
 
-          <div class="mt-5 flex gap-3">
+          <!-- 操作 -->
+          <div class="crm-btns">
             <button
               v-if="canAgain"
               type="button"
-              class="btn btn-primary flex-1"
+              class="crm-btn-main"
               :disabled="againDisabled"
               @click="$emit('again')"
             >
-              {{ t('casino.modal.again') }}
+              ↻&nbsp; {{ t('casino.modal.again') }}
             </button>
-            <button type="button" class="btn flex-1" :class="canAgain ? 'btn-secondary' : 'btn-primary'" @click="close">
+            <button type="button" class="crm-btn" :class="{ 'crm-btn-solid': !canAgain }" @click="close">
               {{ t('casino.modal.ok') }}
             </button>
           </div>
+
+          <p class="crm-luck">— &nbsp;{{ t('casino.modal.bottomLuck') }}&nbsp; —</p>
         </div>
       </div>
     </div>
@@ -93,11 +81,11 @@
 
 <script setup lang="ts">
 /**
- * CasinoResultModal — 六款游戏统一的回合结果弹窗。
- * win: true 中奖 / false 未中奖 / null 平局退本（和局、1 倍返还）。
- * 可选 betOptions/betValue：弹窗内直接改下注额，配合 again 事件重开一局。
+ * CasinoResultModal — 六款游戏统一的回合结果弹窗（黑金会所风，浅/深双主题）。
+ * win: true 中奖 / false 未中奖 / null 平局退本。
+ * title 可覆盖默认标题（对局类结果语义）；betOptions/betValue 支持弹窗内改下注。
  */
-import { computed, onBeforeUnmount, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const props = withDefaults(
@@ -112,15 +100,20 @@ const props = withDefaults(
     balance?: number | null
     canAgain?: boolean
     againDisabled?: boolean
-    /** 覆盖默认标题（win→中奖啦 / lose→未中奖 / push→平局），用于对局类结果文案 */
+    /** 覆盖默认标题（对局类结果文案） */
     title?: string
-    /** 覆盖默认 emoji */
-    emoji?: string
     /** 弹窗内可改下注：可选面值列表 + 当前值（update:betValue） */
     betOptions?: number[]
     betValue?: number
   }>(),
-  { balance: null, canAgain: false, againDisabled: false, betOptions: undefined, betValue: undefined }
+  {
+    balance: null,
+    canAgain: false,
+    againDisabled: false,
+    title: undefined,
+    betOptions: undefined,
+    betValue: undefined
+  }
 )
 
 const emit = defineEmits<{
@@ -134,19 +127,62 @@ const { t } = useI18n()
 const money = (v: number) =>
   Number(v ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-const bannerClass = computed(() => {
-  if (props.win === true) return 'bg-gradient-to-br from-emerald-400 via-emerald-600 to-teal-800'
-  if (props.win === false) return 'bg-gradient-to-br from-rose-400 via-red-600 to-rose-900'
-  return 'bg-gradient-to-br from-amber-300 via-amber-500 to-orange-700'
+/** 浅/深双主题：监听主站 html.dark（内联变量注入，不依赖 CSS 管线） */
+const isDark = ref(false)
+let themeObserver: MutationObserver | null = null
+const syncTheme = () => {
+  isDark.value = document.documentElement.classList.contains('dark')
+}
+onMounted(() => {
+  syncTheme()
+  themeObserver = new MutationObserver(syncTheme)
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 })
+onBeforeUnmount(() => themeObserver?.disconnect())
 
-const emoji = computed(() => props.emoji ?? (props.win === true ? '🎉' : props.win === false ? '🎲' : '🤝'))
+const themeVars = computed<Record<string, string>>(() =>
+  isDark.value
+    ? {
+        '--crm-bg-color': '#0b0b0f',
+        '--crm-bg-image': 'linear-gradient(180deg, #1a1a22 0%, #0b0b0f 100%)',
+        '--crm-ink': '#f0e6c8',
+        '--crm-sub': '#8f8570',
+        '--crm-gold': '#e2c06c',
+        '--crm-gold-strong': '#e9d29a',
+        '--crm-line': 'rgba(212, 175, 90, 0.42)',
+        '--crm-line-soft': 'rgba(212, 175, 90, 0.2)',
+        '--crm-cell': '#101015',
+        '--crm-detail': '#17171d',
+        '--crm-btn-main-bg': 'linear-gradient(180deg, #f2dc9e, #c99b3f)',
+        '--crm-btn-main-ink': '#1d1608'
+      }
+    : {
+        '--crm-bg-color': '#faf7f0',
+        '--crm-bg-image': 'none',
+        '--crm-ink': '#26200f',
+        '--crm-sub': '#8f8570',
+        '--crm-gold': '#a0793a',
+        '--crm-gold-strong': '#8a6a26',
+        '--crm-line': 'rgba(176, 141, 66, 0.42)',
+        '--crm-line-soft': 'rgba(176, 141, 66, 0.22)',
+        '--crm-cell': '#ffffff',
+        '--crm-detail': '#f3efe4',
+        '--crm-btn-main-bg': 'linear-gradient(180deg, #e8cf94, #c99b3f)',
+        '--crm-btn-main-ink': '#221a08'
+      }
+)
 
 const title = computed(() => {
   if (props.title) return props.title
   if (props.win === true) return t('casino.modal.win')
   if (props.win === false) return t('casino.modal.lose')
   return t('casino.modal.push')
+})
+
+const message = computed(() => {
+  if (props.win === true) return t('casino.modal.winMsg')
+  if (props.win === false) return t('casino.modal.loseMsg')
+  return t('casino.modal.pushMsg')
 })
 
 function close() {
@@ -162,49 +198,270 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <style scoped>
-.crm-glow {
+/* ===== 布局（scoped）===== */
+
+.crm-card {
+  position: relative;
+  width: 100%;
+  border-radius: 20px;
+  background-color: var(--crm-bg-color);
+  background-image: var(--crm-bg-image);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.4);
+}
+
+.crm-card::before {
+  content: '';
   position: absolute;
-  border-radius: 9999px;
-  filter: blur(2px);
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 70%);
+  inset: 9px;
+  border: 1px solid var(--crm-line);
+  border-radius: 14px;
+  pointer-events: none;
 }
 
-.crm-glow-a {
-  width: 220px;
-  height: 220px;
-  left: -70px;
-  top: -90px;
+.crm-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  color: var(--crm-sub);
+  border: 1px solid var(--crm-line-soft);
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-.crm-glow-b {
-  width: 260px;
-  height: 260px;
-  right: -90px;
-  bottom: -140px;
+.crm-close:hover {
+  color: var(--crm-gold);
+  border-color: var(--crm-gold);
 }
 
-.crm-sparkle {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.55) 1px, transparent 1.6px);
-  background-size: 20px 20px;
-  animation: crm-twinkle 2.4s ease-in-out infinite alternate;
+.crm-inner {
+  position: relative;
+  padding: 34px 26px 24px;
+  text-align: center;
 }
 
-@keyframes crm-twinkle {
-  from {
-    opacity: 0.3;
-  }
-  to {
-    opacity: 0.75;
-  }
+.crm-topline {
+  width: 64px;
+  height: 2px;
+  margin: 0 auto 18px;
+  background: linear-gradient(90deg, transparent, var(--crm-gold), transparent);
 }
 
+.crm-game {
+  font-size: 11px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--crm-sub);
+}
+
+.crm-title {
+  margin-top: 10px;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--crm-gold-strong);
+}
+
+.crm-amount {
+  margin-top: 6px;
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  color: var(--crm-ink);
+}
+
+.crm-msg {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--crm-sub);
+}
+
+/* ===== 明细 ===== */
+.crm-detail {
+  margin-top: 20px;
+  background: var(--crm-detail);
+  border: 1px solid var(--crm-line-soft);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.crm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.crm-cell {
+  background: var(--crm-cell);
+  border: 1px solid var(--crm-line-soft);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.crm-k {
+  font-size: 12px;
+  color: var(--crm-sub);
+}
+
+.crm-v {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--crm-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.crm-balance .crm-v {
+  font-size: 16px;
+}
+
+/* ===== 面值 chips ===== */
+.crm-chips-wrap {
+  margin-top: 16px;
+}
+
+.crm-chips-lab {
+  margin-bottom: 8px;
+}
+
+.crm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.crm-chip {
+  position: relative;
+  min-width: 3.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--crm-line-soft);
+  background: transparent;
+  color: var(--crm-sub);
+  padding: 7px 16px;
+  font-size: 13.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.crm-chip:hover {
+  border-color: var(--crm-line);
+  color: var(--crm-gold);
+}
+
+.crm-chip-on {
+  border-color: var(--crm-gold);
+  color: var(--crm-gold-strong);
+  font-weight: 800;
+}
+
+:global(.dark) .crm-chip-on {
+  color: var(--crm-gold);
+}
+
+.crm-chip-check {
+  position: absolute;
+  top: -7px;
+  right: -5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--crm-gold);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--crm-cell);
+}
+
+/* ===== 按钮 ===== */
+.crm-btns {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.crm-btn {
+  flex: 1;
+  border-radius: 999px;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--crm-gold-strong);
+  background: transparent;
+  border: 1px solid var(--crm-line);
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.crm-btn:hover {
+  filter: brightness(1.06);
+}
+
+.crm-btn:active {
+  transform: scale(0.98);
+}
+
+.crm-btn-solid,
+.crm-btn-main {
+  flex: 1;
+  border-radius: 999px;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 800;
+  background: var(--crm-btn-main-bg);
+  color: var(--crm-btn-main-ink);
+  border: none;
+  box-shadow: 0 6px 16px rgba(201, 155, 63, 0.3);
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.crm-btn-main:hover,
+.crm-btn-solid:hover {
+  filter: brightness(1.05);
+}
+
+.crm-btn-main:active,
+.crm-btn-solid:active {
+  transform: scale(0.98);
+}
+
+.crm-btn-main:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.crm-luck {
+  margin-top: 16px;
+  font-size: 11.5px;
+  color: var(--crm-sub);
+  opacity: 0.75;
+}
+
+/* ===== 进出场 ===== */
 .crm-zoom-enter-active,
 .crm-zoom-leave-active {
   transition: opacity 0.18s ease;
 }
 
-.crm-zoom-enter-active :deep(.relative),
-.crm-zoom-leave-active :deep(.relative) {
+.crm-zoom-enter-active :deep(.crm-card),
+.crm-zoom-leave-active :deep(.crm-card) {
   transition: transform 0.18s ease;
 }
 
@@ -213,8 +470,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   opacity: 0;
 }
 
-.crm-zoom-enter-from :deep(.relative),
-.crm-zoom-leave-to :deep(.relative) {
-  transform: scale(0.92) translateY(10px);
+.crm-zoom-enter-from :deep(.crm-card),
+.crm-zoom-leave-to :deep(.crm-card) {
+  transform: scale(0.94) translateY(10px);
 }
 </style>

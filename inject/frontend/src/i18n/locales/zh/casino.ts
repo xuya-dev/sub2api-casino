@@ -48,7 +48,11 @@ export default {
       balanceAfter: '结算后余额',
       betLabel: '调整下注面值',
       again: '再来一局',
-      ok: '知道了'
+      ok: '知道了',
+      winMsg: '恭喜中奖！好运爆棚，继续冲！',
+      loseMsg: '很遗憾，这局没有中哦～ 再接再厉，下次好运！',
+      pushMsg: '平局收场，本金已退回，再战一局！',
+      bottomLuck: '祝您好运，收获更多惊喜！'
     },
     lobby: {
       title: '游戏大厅',

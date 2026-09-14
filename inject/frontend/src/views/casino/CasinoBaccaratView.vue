@@ -259,7 +259,6 @@
         :payout="modalData.payout"
         :balance="modalData.balance"
         :title="modalData.title"
-        :emoji="modalData.emoji"
         can-again
         :bet-options="betPresets"
         :bet-value="Number(bet)"
@@ -306,8 +305,7 @@ const modalData = ref({
   payout: 0,
   bet: 0,
   balance: null as number | null,
-  title: undefined as string | undefined,
-  emoji: undefined as string | undefined
+  title: undefined as string | undefined
 })
 const showRules = ref(false)
 const result = ref<CasinoBaccaratDealResult | null>(null)
@@ -502,8 +500,7 @@ function showResult(payout: number, bet: number, balance?: number | null) {
     payout,
     bet,
     balance: balance ?? null,
-    title: resultTitle(),
-    emoji: undefined
+    title: resultTitle()
   }
   resultModal.value = true
 }

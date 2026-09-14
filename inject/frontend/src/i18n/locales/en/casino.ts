@@ -48,7 +48,11 @@ export default {
       balanceAfter: 'Balance after',
       betLabel: 'Adjust stake',
       again: 'Play again',
-      ok: 'OK'
+      ok: 'OK',
+      winMsg: 'Congratulations! What a lucky streak — keep going!',
+      loseMsg: 'So close! Try again — better luck next round!',
+      pushMsg: 'A push — your stake is back. One more go?',
+      bottomLuck: 'Good luck — may the surprises keep coming!'
     },
     lobby: {
       title: 'Game Lobby',
