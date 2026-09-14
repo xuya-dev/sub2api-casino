@@ -110,6 +110,123 @@
         </label>
       </div>
 
+      <!-- 骰宝 -->
+      <h4 class="mb-3 mt-6 text-sm font-semibold text-gray-700 dark:text-dark-300">{{ t('casino.admin.sicboTitle') }}</h4>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.sicboBig') }}</span>
+          <input v-model.number="form.sicbo.big" type="number" step="0.05" class="input" />
+        </label>
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.sicboSmall') }}</span>
+          <input v-model.number="form.sicbo.small" type="number" step="0.05" class="input" />
+        </label>
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.sicboOdd') }}</span>
+          <input v-model.number="form.sicbo.odd" type="number" step="0.05" class="input" />
+        </label>
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.sicboEven') }}</span>
+          <input v-model.number="form.sicbo.even" type="number" step="0.05" class="input" />
+        </label>
+      </div>
+
+      <!-- 百家乐 -->
+      <h4 class="mb-3 mt-6 text-sm font-semibold text-gray-700 dark:text-dark-300">{{ t('casino.admin.baccaratTitle') }}</h4>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.baccaratPlayer') }}</span>
+          <input v-model.number="form.baccarat.player" type="number" step="0.05" class="input" />
+        </label>
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.baccaratBanker') }}</span>
+          <input v-model.number="form.baccarat.banker" type="number" step="0.05" class="input" />
+        </label>
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.baccaratTie') }}</span>
+          <input v-model.number="form.baccarat.tie" type="number" step="0.05" class="input" />
+        </label>
+      </div>
+
+      <!-- 刮刮乐 · 经典刮奖 -->
+      <h4 class="mb-3 mt-6 text-sm font-semibold text-gray-700 dark:text-dark-300">{{ t('casino.admin.scratchTitle') }}</h4>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.scratchWinRate') }}</span>
+          <input v-model.number="form.scratch.win_rate" type="number" step="0.01" min="0.01" max="1" class="input" />
+        </label>
+      </div>
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-100 text-left text-gray-500 dark:border-dark-700">
+              <th class="px-2 py-2">{{ t('casino.admin.tierMultiplier') }}</th>
+              <th class="px-2 py-2">{{ t('casino.admin.tierProb') }}</th>
+              <th class="px-2 py-2"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(tier, i) in form.scratch.tiers" :key="i" class="border-b border-gray-50 dark:border-dark-800">
+              <td class="px-2 py-2"><input v-model.number="tier.multiplier" type="number" step="0.001" class="input w-28" /></td>
+              <td class="px-2 py-2"><input v-model.number="tier.probability" type="number" step="0.001" class="input w-28" /></td>
+              <td class="px-2 py-2 text-right">
+                <button type="button" class="text-red-500 hover:text-red-600" @click="form.scratch.tiers.splice(i, 1)">✕</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm mt-3" @click="form.scratch.tiers.push({ multiplier: 1, probability: 0.05 })">
+        + {{ t('casino.admin.addRow') }}
+      </button>
+
+      <!-- 刮刮乐 · 幸运7 -->
+      <h4 class="mb-3 mt-6 text-sm font-semibold text-gray-700 dark:text-dark-300">{{ t('casino.admin.scratchLucky7Title') }}</h4>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.lucky7Cells') }}</span>
+          <input v-model.number="form.scratch.lucky7.cells" type="number" step="1" min="1" max="12" class="input" />
+        </label>
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.lucky7HitRate') }}</span>
+          <input v-model.number="form.scratch.lucky7.hit_rate" type="number" step="0.005" min="0.001" max="1" class="input" />
+        </label>
+      </div>
+
+      <!-- 刮刮乐 · 幸运连线 -->
+      <h4 class="mb-3 mt-6 text-sm font-semibold text-gray-700 dark:text-dark-300">{{ t('casino.admin.scratchLinesTitle') }}</h4>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <label class="block">
+          <span class="input-label">{{ t('casino.admin.linesWinRate') }}</span>
+          <input v-model.number="form.scratch.lines.win_rate" type="number" step="0.01" min="0.01" max="1" class="input" />
+        </label>
+      </div>
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-100 text-left text-gray-500 dark:border-dark-700">
+              <th class="px-2 py-2">{{ t('casino.admin.lineSymbols') }}</th>
+              <th class="px-2 py-2">{{ t('casino.admin.lineMult') }}</th>
+              <th class="px-2 py-2">{{ t('casino.admin.lineProb') }}</th>
+              <th class="px-2 py-2"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(sym, i) in form.scratch.lines.symbols" :key="i" class="border-b border-gray-50 dark:border-dark-800">
+              <td class="px-2 py-2"><input v-model="sym.id" type="text" class="input w-28" /></td>
+              <td class="px-2 py-2"><input v-model.number="sym.multiplier" type="number" step="0.001" class="input w-24" /></td>
+              <td class="px-2 py-2"><input v-model.number="sym.probability" type="number" step="0.001" class="input w-24" /></td>
+              <td class="px-2 py-2 text-right">
+                <button type="button" class="text-red-500 hover:text-red-600" @click="form.scratch.lines.symbols.splice(i, 1)">✕</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm mt-3" @click="form.scratch.lines.symbols.push({ id: 'sym' + (form.scratch.lines.symbols.length + 1), multiplier: 1, probability: 0.1 })">
+        + {{ t('casino.admin.addRow') }}
+      </button>
+
       <div class="mt-6 flex items-center gap-3">
         <button type="button" class="btn btn-primary" :disabled="saving" @click="save">
           {{ saving ? t('common.saving') : t('casino.admin.save') }}
@@ -185,7 +302,15 @@ const form = reactive({
   daily_loss_limit: 0,
   wheel: { segments: [] as { label: string; multiplier: number; weight: number }[] },
   slots: { symbols: [] as { id: string; emoji: string; weight: number }[] },
-  blackjack: { blackjack_pays: 2.5, dealer_stands_soft17: true, double_allowed: true }
+  blackjack: { blackjack_pays: 2.5, dealer_stands_soft17: true, double_allowed: true },
+  sicbo: { big: 2, small: 2, odd: 2, even: 2 },
+  baccarat: { player: 2, banker: 1.95, tie: 9 },
+  scratch: {
+    win_rate: 0.29,
+    tiers: [] as { multiplier: number; probability: number }[],
+    lucky7: { cells: 7, hit_rate: 0.085, tiers: [] as { multiplier: number; probability: number }[] },
+    lines: { win_rate: 0.27, symbols: [] as { id: string; multiplier: number; probability: number }[] }
+  }
 })
 const slotPays = reactive<Record<string, { triple: number; pair: number }>>({})
 
@@ -239,6 +364,16 @@ async function load() {
       id: x.id, emoji: x.emoji, weight: Number(x.weight ?? 1)
     }))
     form.blackjack = { ...r.config.blackjack }
+    const cfg = r.config as unknown as Record<string, unknown>
+    form.sicbo = { ...(cfg.sicbo as typeof form.sicbo) }
+    form.baccarat = { ...(cfg.baccarat as typeof form.baccarat) }
+    const sc = cfg.scratch as typeof form.scratch | undefined
+    if (sc) {
+      form.scratch.win_rate = sc.win_rate
+      form.scratch.tiers = sc.tiers?.map(x => ({ multiplier: Number(x.multiplier), probability: Number(x.probability) })) ?? []
+      if (sc.lucky7) form.scratch.lucky7 = { ...sc.lucky7 }
+      if (sc.lines) form.scratch.lines = { ...sc.lines, symbols: sc.lines.symbols?.map(x => ({ id: x.id, multiplier: Number(x.multiplier), probability: Number(x.probability) })) ?? [] }
+    }
     Object.keys(slotPays).forEach(k => delete slotPays[k])
     form.slots.symbols.forEach(x => {
       slotPays[x.id] = { triple: Number(cfg.slots.triple_pays?.[x.id] ?? 0), pair: Number(cfg.slots.pair_pays?.[x.id] ?? 0) }
@@ -267,7 +402,10 @@ async function save() {
       daily_loss_limit: form.daily_loss_limit,
       wheel: { segments: form.wheel.segments },
       slots: { symbols: form.slots.symbols, triple_pays: triple, pair_pays: pair },
-      blackjack: { ...form.blackjack }
+      blackjack: { ...form.blackjack },
+      sicbo: { ...form.sicbo },
+      baccarat: { ...form.baccarat },
+      scratch: { ...form.scratch }
     })
     saveOk.value = true
     saveMsg.value = t('casino.admin.saved')
