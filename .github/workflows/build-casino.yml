@@ -36,7 +36,7 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build injector
-        working-directory: plugin/casino/inject
+        working-directory: inject
         run: |
           python -m PyInstaller --onefile --name inject-casino --clean inject.py
         shell: bash
@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: plugin/casino/inject/dist/${{ matrix.artifact_name }}
+          path: inject/dist/${{ matrix.artifact_name }}
 
   release:
     needs: build
@@ -61,7 +61,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/inject-casino.exe/inject-casino.exe
-            artifacts/inject-casino/inject-casino
+            artifacts/inject-casino-windows-amd64.exe/inject-casino.exe
+            artifacts/inject-casino-linux-amd64/inject-casino
+            artifacts/inject-casino-darwin-amd64/inject-casino
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
