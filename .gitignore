@@ -18,3 +18,6 @@ server-embed.log
 
 # 临时/锁定目录（重启后可删）
 design/
+modal-preview.html
+inject/sync-docker.sh
+inject/check-dist.sh
