@@ -350,7 +350,7 @@ async function load() {
   loadError.value = ''
   try {
     const r = await casinoAPI.getAdminConfig()
-    const cfg = r.config as unknown as {
+    const cfg = r.config as unknown as Record<string, unknown> & {
       slots: { triple_pays?: Record<string, number>; pair_pays?: Record<string, number> }
     }
     form.enabled = r.config.enabled !== false
@@ -364,7 +364,6 @@ async function load() {
       id: x.id, emoji: x.emoji, weight: Number(x.weight ?? 1)
     }))
     form.blackjack = { ...r.config.blackjack }
-    const cfg = r.config as unknown as Record<string, unknown>
     form.sicbo = { ...(cfg.sicbo as typeof form.sicbo) }
     form.baccarat = { ...(cfg.baccarat as typeof form.baccarat) }
     const sc = cfg.scratch as typeof form.scratch | undefined

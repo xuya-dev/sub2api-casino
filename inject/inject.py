@@ -40,12 +40,29 @@ def strip_blocks(s):
     hpat = re.escape(HTML_BEGIN) + '.*?' + re.escape(HTML_END)
     while re.search(pat, s, flags=re.S):
         s = re.sub(pat, '', s, flags=re.S)
+    while re.search(hpat, s, flags=re.S):
+        s = re.sub(hpat, '', s, flags=re.S)
     s = re.sub('^[ \t]*' + re.escape(BEGIN) + '[ \t]*\n?', '', s, flags=re.M)
     s = re.sub('^[ \t]*' + re.escape(END) + '[ \t]*\n?', '', s, flags=re.M)
+    s = re.sub('^[ \t]*' + re.escape(HTML_BEGIN) + '[ \t]*\n?', '', s, flags=re.M)
+    s = re.sub('^[ \t]*' + re.escape(HTML_END) + '[ \t]*\n?', '', s, flags=re.M)
     s = re.sub(r'\n{3,}', '\n\n', s)
     return s
 
 def apply_patches(root):
+    # 幂等：先 strip 掉全部旧标记块（含 HTML 注释标记），再检查已注入特征
+    # 检测标准：CasinoAdminPanel 组件使用才算已注入（标记可能被删但 import 残留）
+    for rel in ('frontend/src/views/admin/SettingsView.vue',):
+        path = os.path.join(root, rel.replace('/', os.sep))
+        if os.path.exists(path):
+            s = read(path)
+            has_component = '<CasinoAdminPanel' in s
+            if has_component:
+                print('  [skip ] ' + rel + ' (already injected)')
+                global PATCHES
+                PATCHES = [p for p in PATCHES if p['file'] != rel]
+                break
+
     # 按文件分组：先整份 strip 掉旧标记块，再依次按锚点插入，最后一次性写回
     by_file = {}
     for item in PATCHES:

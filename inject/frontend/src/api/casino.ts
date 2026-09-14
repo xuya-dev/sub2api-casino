@@ -210,6 +210,14 @@ export interface CasinoAdminConfig {
     pair_pays?: Record<string, number>
   }
   blackjack: CasinoBlackjackConfig
+  sicbo?: { big: number; small: number; odd: number; even: number }
+  baccarat?: { player: number; banker: number; tie: number }
+  scratch?: {
+    win_rate: number
+    tiers: { multiplier: number; probability: number }[]
+    lucky7?: { cells: number; hit_rate: number }
+    lines?: { win_rate: number; symbols: { id: string; multiplier: number; probability: number }[] }
+  }
 }
 
 export interface CasinoAdminStats {
