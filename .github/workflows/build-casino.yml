@@ -6,21 +6,20 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
         include:
           - os: windows-latest
-            artifact_name: inject-casino.exe
-            asset_name: inject-casino-windows-amd64.exe
+            artifact_name: inject-casino-windows-amd64.exe
           - os: ubuntu-latest
-            artifact_name: inject-casino
-            asset_name: inject-casino-linux-amd64
+            artifact_name: inject-casino-linux-amd64
           - os: macos-latest
-            artifact_name: inject-casino
-            asset_name: inject-casino-darwin-amd64
+            artifact_name: inject-casino-darwin-amd64
 
     runs-on: ${{ matrix.os }}
 
@@ -37,9 +36,10 @@ jobs:
 
       - name: Build injector
         working-directory: inject
+        shell: bash
         run: |
           python -m PyInstaller --onefile --name inject-casino --clean inject.py
-        shell: bash
+          mv dist/inject-casino* "dist/${{ matrix.artifact_name }}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -61,8 +61,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/inject-casino-windows-amd64.exe/inject-casino.exe
-            artifacts/inject-casino-linux-amd64/inject-casino
-            artifacts/inject-casino-darwin-amd64/inject-casino
+            artifacts/inject-casino-windows-amd64.exe/inject-casino-windows-amd64.exe
+            artifacts/inject-casino-linux-amd64/inject-casino-linux-amd64
+            artifacts/inject-casino-darwin-amd64/inject-casino-darwin-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
